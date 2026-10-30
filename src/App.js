@@ -1,25 +1,38 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect, useState } from 'react';
+import { fetchPatientData } from './api';
+import PatientCard from './components/PatientCard';
+import BloodPressureChart from './components/BloodPressureChart';
+import './styles/App.css';
 
 function App() {
+  const [patient, setPatient] = useState(null);
+  const [chartData, setChartData] = useState([]);
+
+  useEffect(() => {
+    const loadData = async () => {
+      const data = await fetchPatientData();
+      const jessica = data.find(person => person.name === 'Jessica Taylor');
+      setPatient(jessica);
+      setChartData(jessica.diagnosis_history);
+    };
+
+    loadData();
+  }, []);
+
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      {patient ? (
+        <>
+          <PatientCard patient={patient} />
+          <BloodPressureChart data={chartData} />
+        </>
+      ) : (
+        <p>Loading...</p>
+      )}
     </div>
   );
 }
 
 export default App;
+
+
